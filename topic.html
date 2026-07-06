@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GlobalChat</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="header">
+        <h1>🌐 GlobalChat</h1>
+
+        <p id="topicDescription">
+            Carregando tópico...
+        </p>
+    </header>
+
+    <main class="container">
+
+        <section class="topicHeader">
+
+            <h2 id="topicTitle">
+                Carregando...
+            </h2>
+
+            <span id="topicAge" class="age"></span>
+
+        </section>
+
+        <section id="messages" class="messages">
+
+            <div class="loading">
+                Carregando mensagens...
+            </div>
+
+        </section>
+
+        <section class="sendBox">
+
+            <form id="messageForm">
+
+                <textarea
+                    id="message"
+                    rows="4"
+                    maxlength="500"
+                    placeholder="Digite sua mensagem..."
+                    required
+                ></textarea>
+
+                <div class="buttons">
+
+                    <button
+                        type="submit"
+                        class="button"
+                    >
+                        Enviar
+                    </button>
+
+                    <a
+                        href="index.html"
+                        class="button secondary"
+                    >
+                        Voltar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <!-- Aviso de idade -->
+
+    <div id="ageWarning" class="modal hidden">
+
+        <div class="modalBox">
+
+            <h2>⚠ Conteúdo Restrito</h2>
+
+            <p>
+                Este tópico é recomendado para maiores de
+                <strong id="warningAge"></strong>.
+            </p>
+
+            <p>
+                Ele pode conter assuntos destinados a um
+                público mais velho.
+            </p>
+
+            <div class="buttons">
+
+                <button
+                    id="continueButton"
+                    class="button"
+                >
+                    Entrar
+                </button>
+
+                <button
+                    id="cancelButton"
+                    class="button secondary"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/topic.js"></script>
+
+</body>
+</html>
