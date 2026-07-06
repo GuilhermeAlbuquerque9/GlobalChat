@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlobalChat</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header class="header">
+        <h1>🌐 GlobalChat</h1>
+        <p>Converse com pessoas do mundo inteiro.</p>
+    </header>
+
+    <main class="container">
+
+        <section class="toolbar">
+            <a href="create.html" class="button">
+                + Criar tópico
+            </a>
+        </section>
+
+        <section class="topics">
+
+            <!-- Os tópicos serão adicionados aqui pelo JavaScript -->
+            <div id="topicsList">
+
+                <div class="loading">
+                    Carregando tópicos...
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        GlobalChat © 2026
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/index.js"></script>
+
+</body>
+</html>
