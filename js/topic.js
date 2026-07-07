@@ -1,5 +1,19 @@
-const params = new URLSearchParams(location.search);
+import {
+    getTopic,
+    getMessages,
+    sendMessage
+} from "./firebase.js";
+
+const params = new URLSearchParams(window.location.search);
 const topicId = params.get("id");
+
+if (!topicId) {
+    window.location.href = "index.html";
+}
+
+// ======================================================
+// Elementos
+// ======================================================
 
 const topicTitle = document.getElementById("topicTitle");
 const topicDescription = document.getElementById("topicDescription");
@@ -10,48 +24,37 @@ const messages = document.getElementById("messages");
 const form = document.getElementById("messageForm");
 const messageInput = document.getElementById("message");
 
+// Aviso de idade
+
 const ageWarning = document.getElementById("ageWarning");
 const warningAge = document.getElementById("warningAge");
-
 const continueButton = document.getElementById("continueButton");
 const cancelButton = document.getElementById("cancelButton");
 
-let currentTopic = null;
-let ageConfirmed = false;
+// Nome de usuário
 
-if (!topicId) {
+const usernameModal = document.getElementById("usernameModal");
+const usernameInput = document.getElementById("username");
+const usernameButton = document.getElementById("usernameButton");
 
-    location.href = "index.html";
+let username =
+    localStorage.getItem("globalchat_username") || "Anônimo";
 
-}
+let topic = null;
 
-continueButton.addEventListener("click", () => {
-
-    ageWarning.classList.add("hidden");
-
-    ageConfirmed = true;
-
-    loadMessages();
-
-});
-
-cancelButton.addEventListener("click", () => {
-
-    location.href = "index.html";
-
-});
-
-form.addEventListener("submit", sendMessage);
+// ======================================================
 
 loadTopic();
+
+// ======================================================
 
 async function loadTopic() {
 
     try {
 
-        currentTopic = await getTopic(topicId);
+        topic = await getTopic(topicId);
 
-        if (!currentTopic) {
+        if (!topic) {
 
             alert("Tópico não encontrado.");
 
@@ -61,42 +64,90 @@ async function loadTopic() {
 
         }
 
-        topicTitle.textContent = currentTopic.title;
-        topicDescription.textContent = currentTopic.description;
+        topicTitle.textContent = topic.title;
+        topicDescription.textContent = topic.description;
 
-        if (Number(currentTopic.age) === 0) {
+        if (Number(topic.age) === 0) {
 
             topicAge.textContent = "Livre";
 
-            ageConfirmed = true;
-
-            loadMessages();
+            showUsername();
 
         } else {
 
-            topicAge.textContent = currentTopic.age + "+";
+            topicAge.textContent = topic.age + "+";
 
-            warningAge.textContent = currentTopic.age + " anos";
+            warningAge.textContent = topic.age + " anos";
 
             ageWarning.classList.remove("hidden");
 
         }
 
-    } catch (error) {
+    } catch (err) {
 
-        console.error(error);
+        console.error(err);
 
         alert("Erro ao carregar o tópico.");
-
-        location.href = "index.html";
 
     }
 
 }
 
-async function loadMessages() {
+// ======================================================
 
-    if (!ageConfirmed) return;
+continueButton.addEventListener("click", () => {
+
+    ageWarning.classList.add("hidden");
+
+    showUsername();
+
+});
+
+cancelButton.addEventListener("click", () => {
+
+    location.href = "index.html";
+
+});
+
+// ======================================================
+
+function showUsername() {
+
+    usernameInput.value =
+        localStorage.getItem("globalchat_username") || "";
+
+    usernameModal.classList.remove("hidden");
+
+    usernameInput.focus();
+
+}
+
+// ======================================================
+
+usernameButton.addEventListener("click", async () => {
+
+    username = usernameInput.value.trim();
+
+    if (username === "") {
+
+        username = "Anônimo";
+
+    }
+
+    localStorage.setItem(
+        "globalchat_username",
+        username
+    );
+
+    usernameModal.classList.add("hidden");
+
+    await loadMessages();
+
+});
+
+// ======================================================
+
+async function loadMessages() {
 
     try {
 
@@ -104,7 +155,7 @@ async function loadMessages() {
 
         messages.innerHTML = "";
 
-        if (!list || list.length === 0) {
+        if (list.length === 0) {
 
             messages.innerHTML = `
                 <div class="loading">
@@ -120,19 +171,15 @@ async function loadMessages() {
 
         messages.scrollTop = messages.scrollHeight;
 
-    } catch (error) {
+    } catch (err) {
 
-        console.error(error);
-
-        messages.innerHTML = `
-            <div class="loading">
-                Erro ao carregar mensagens.
-            </div>
-        `;
+        console.error(err);
 
     }
 
 }
+
+// ======================================================
 
 function addMessage(message) {
 
@@ -146,7 +193,7 @@ function addMessage(message) {
         </div>
 
         <div class="messageDate">
-            ${escapeHtml(message.date)}
+            ${formatDate(message.created)}
         </div>
 
         <div class="messageText">
@@ -158,7 +205,9 @@ function addMessage(message) {
 
 }
 
-async function sendMessage(event) {
+// ======================================================
+
+form.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
@@ -172,28 +221,29 @@ async function sendMessage(event) {
 
     try {
 
-        await sendMessageAPI({
-
-            topic: topicId,
-            text: text
-
-        });
+        await sendMessage(
+            topicId,
+            username,
+            text
+        );
 
         messageInput.value = "";
 
         await loadMessages();
 
-    } catch (error) {
+    } catch (err) {
 
-        console.error(error);
+        console.error(err);
 
-        alert("Não foi possível enviar a mensagem.");
+        alert("Erro ao enviar a mensagem.");
 
     }
 
     button.disabled = false;
 
-}
+});
+
+// ======================================================
 
 function escapeHtml(text) {
 
@@ -202,5 +252,23 @@ function escapeHtml(text) {
     div.textContent = text ?? "";
 
     return div.innerHTML;
+
+}
+
+// ======================================================
+
+function formatDate(timestamp) {
+
+    if (!timestamp) return "";
+
+    if (timestamp.seconds) {
+
+        return new Date(
+            timestamp.seconds * 1000
+        ).toLocaleString("pt-BR");
+
+    }
+
+    return "";
 
 }
