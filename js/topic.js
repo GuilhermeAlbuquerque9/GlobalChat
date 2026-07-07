@@ -1,14 +1,18 @@
 import {
     getTopic,
-    getMessages,
+    listenMessages,
     sendMessage
 } from "./firebase.js";
+
+// ======================================================
+// Parâmetros
+// ======================================================
 
 const params = new URLSearchParams(window.location.search);
 const topicId = params.get("id");
 
 if (!topicId) {
-    window.location.href = "index.html";
+    location.href = "index.html";
 }
 
 // ======================================================
@@ -37,10 +41,7 @@ const usernameModal = document.getElementById("usernameModal");
 const usernameInput = document.getElementById("username");
 const usernameButton = document.getElementById("usernameButton");
 
-let username =
-    localStorage.getItem("globalchat_username") || "Anônimo";
-
-let topic = null;
+let username = localStorage.getItem("globalchat_username") || "Anônimo";
 
 // ======================================================
 
@@ -52,7 +53,7 @@ async function loadTopic() {
 
     try {
 
-        topic = await getTopic(topicId);
+        const topic = await getTopic(topicId);
 
         if (!topic) {
 
@@ -71,7 +72,7 @@ async function loadTopic() {
 
             topicAge.textContent = "Livre";
 
-            showUsername();
+            showUsernameModal();
 
         } else {
 
@@ -83,9 +84,9 @@ async function loadTopic() {
 
         }
 
-    } catch (err) {
+    } catch (error) {
 
-        console.error(err);
+        console.error(error);
 
         alert("Erro ao carregar o tópico.");
 
@@ -99,7 +100,7 @@ continueButton.addEventListener("click", () => {
 
     ageWarning.classList.add("hidden");
 
-    showUsername();
+    showUsernameModal();
 
 });
 
@@ -111,7 +112,7 @@ cancelButton.addEventListener("click", () => {
 
 // ======================================================
 
-function showUsername() {
+function showUsernameModal() {
 
     usernameInput.value =
         localStorage.getItem("globalchat_username") || "";
@@ -124,7 +125,7 @@ function showUsername() {
 
 // ======================================================
 
-usernameButton.addEventListener("click", async () => {
+usernameButton.addEventListener("click", () => {
 
     username = usernameInput.value.trim();
 
@@ -141,17 +142,15 @@ usernameButton.addEventListener("click", async () => {
 
     usernameModal.classList.add("hidden");
 
-    await loadMessages();
+    startChat();
 
 });
 
 // ======================================================
 
-async function loadMessages() {
+function startChat() {
 
-    try {
-
-        const list = await getMessages(topicId);
+    listenMessages(topicId, (list) => {
 
         messages.innerHTML = "";
 
@@ -171,11 +170,7 @@ async function loadMessages() {
 
         messages.scrollTop = messages.scrollHeight;
 
-    } catch (err) {
-
-        console.error(err);
-
-    }
+    });
 
 }
 
@@ -188,17 +183,25 @@ function addMessage(message) {
     div.className = "message";
 
     div.innerHTML = `
+
         <div class="messageUser">
-            ${escapeHtml(message.user)}
+
+            ${escapeHtml(message.user || "Anônimo")}
+
         </div>
 
         <div class="messageDate">
+
             ${formatDate(message.created)}
+
         </div>
 
         <div class="messageText">
+
             ${escapeHtml(message.text)}
+
         </div>
+
     `;
 
     messages.appendChild(div);
@@ -213,7 +216,7 @@ form.addEventListener("submit", async (event) => {
 
     const text = messageInput.value.trim();
 
-    if (!text) return;
+    if (text === "") return;
 
     const button = form.querySelector("button");
 
@@ -222,20 +225,24 @@ form.addEventListener("submit", async (event) => {
     try {
 
         await sendMessage(
+
             topicId,
+
             username,
+
             text
+
         );
 
         messageInput.value = "";
 
-        await loadMessages();
+        messageInput.focus();
 
-    } catch (err) {
+    } catch (error) {
 
-        console.error(err);
+        console.error(error);
 
-        alert("Erro ao enviar a mensagem.");
+        alert("Não foi possível enviar a mensagem.");
 
     }
 
@@ -245,21 +252,13 @@ form.addEventListener("submit", async (event) => {
 
 // ======================================================
 
-function escapeHtml(text) {
-
-    const div = document.createElement("div");
-
-    div.textContent = text ?? "";
-
-    return div.innerHTML;
-
-}
-
-// ======================================================
-
 function formatDate(timestamp) {
 
-    if (!timestamp) return "";
+    if (!timestamp) {
+
+        return "";
+
+    }
 
     if (timestamp.seconds) {
 
@@ -270,5 +269,17 @@ function formatDate(timestamp) {
     }
 
     return "";
+
+}
+
+// ======================================================
+
+function escapeHtml(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text ?? "";
+
+    return div.innerHTML;
 
 }
