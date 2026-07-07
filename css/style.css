@@ -299,3 +299,22 @@ footer{
     }
 
 }
+
+.logoTitle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+.logo{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+
+.logoTitle span{
+    font-size:32px;
+    color:#0047b3;
+    font-weight:bold;
+}
