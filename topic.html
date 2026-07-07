@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>GlobalChat</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
 </head>
 <body>
 
@@ -92,6 +101,8 @@
 
     </main>
 
+    <!-- Aviso de idade -->
+
     <div
         id="ageWarning"
         class="modal hidden"
@@ -104,13 +115,18 @@
             </h2>
 
             <p>
+
                 Este tópico é recomendado para maiores de
+
                 <strong id="warningAge"></strong>.
+
             </p>
 
             <p>
-                Ele pode conter assuntos destinados a um
-                público mais velho.
+
+                Ele pode conter assuntos destinados
+                a um público mais velho.
+
             </p>
 
             <div class="buttons">
@@ -119,7 +135,7 @@
                     id="continueButton"
                     class="button"
                 >
-                    Entrar
+                    Continuar
                 </button>
 
                 <button
@@ -135,8 +151,56 @@
 
     </div>
 
-    <script src="js/topic.js"></script>
-    <script type="module" src="js/firebase.js"></script>
+    <!-- Nome de usuário -->
+
+    <div
+        id="usernameModal"
+        class="modal hidden"
+    >
+
+        <div class="modalBox">
+
+            <h2>
+                Entrar no tópico
+            </h2>
+
+            <p>
+
+                Digite um nome de usuário.
+
+                <br><br>
+
+                Deixe em branco para entrar como
+                <strong>Anônimo</strong>.
+
+            </p>
+
+            <input
+                type="text"
+                id="username"
+                maxlength="30"
+                placeholder="Nome de usuário"
+            >
+
+            <div class="buttons">
+
+                <button
+                    id="usernameButton"
+                    class="button"
+                >
+                    Entrar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script
+        type="module"
+        src="js/topic.js"
+    ></script>
 
 </body>
 </html>
