@@ -1,3 +1,5 @@
+import { getTopics } from "./firebase.js";
+
 const topicsList = document.getElementById("topicsList");
 
 loadTopics();
@@ -14,7 +16,7 @@ async function loadTopics() {
 
         const topics = await getTopics();
 
-        if (!topics || topics.length === 0) {
+        if (topics.length === 0) {
 
             topicsList.innerHTML = `
                 <div class="loading">
@@ -23,6 +25,7 @@ async function loadTopics() {
             `;
 
             return;
+
         }
 
         topicsList.innerHTML = "";
@@ -46,29 +49,33 @@ async function loadTopics() {
 function createTopicCard(topic) {
 
     const card = document.createElement("div");
+
     card.className = "topic";
 
-    const ageText = Number(topic.age) === 0
+    const age = Number(topic.age) === 0
         ? "Livre"
         : `${topic.age}+`;
 
     card.innerHTML = `
+
         <h2>${escapeHtml(topic.title)}</h2>
 
         <p>${escapeHtml(topic.description)}</p>
 
-        <span class="age">${ageText}</span>
+        <span class="age">${age}</span>
 
         <br><br>
 
         <button>
             Entrar
         </button>
+
     `;
 
     card.querySelector("button").addEventListener("click", () => {
 
-        location.href = `topic.html?id=${encodeURIComponent(topic.id)}`;
+        location.href =
+            `topic.html?id=${encodeURIComponent(topic.id)}`;
 
     });
 
@@ -79,6 +86,7 @@ function createTopicCard(topic) {
 function escapeHtml(text) {
 
     const div = document.createElement("div");
+
     div.textContent = text ?? "";
 
     return div.innerHTML;
