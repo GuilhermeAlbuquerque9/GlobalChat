@@ -1,8 +1,15 @@
 import {
     getTopic,
-    listenMessages,
-    sendMessage
+    sendMessage,
+    db
 } from "./firebase.js";
+
+import {
+    collection,
+    query,
+    orderBy,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 // ======================================================
 // Parâmetros
@@ -28,20 +35,17 @@ const messages = document.getElementById("messages");
 const form = document.getElementById("messageForm");
 const messageInput = document.getElementById("message");
 
-// Aviso de idade
-
 const ageWarning = document.getElementById("ageWarning");
 const warningAge = document.getElementById("warningAge");
 const continueButton = document.getElementById("continueButton");
 const cancelButton = document.getElementById("cancelButton");
 
-// Nome de usuário
-
 const usernameModal = document.getElementById("usernameModal");
 const usernameInput = document.getElementById("username");
 const usernameButton = document.getElementById("usernameButton");
 
-let username = localStorage.getItem("globalchat_username") || "Anônimo";
+let username =
+    localStorage.getItem("globalchat_username") || "Anônimo";
 
 // ======================================================
 
@@ -129,7 +133,7 @@ usernameButton.addEventListener("click", () => {
 
     username = usernameInput.value.trim();
 
-    if (username === "") {
+    if (!username) {
 
         username = "Anônimo";
 
@@ -150,11 +154,24 @@ usernameButton.addEventListener("click", () => {
 
 function startChat() {
 
-    listenMessages(topicId, (list) => {
+    const q = query(
+
+        collection(
+            db,
+            "topics",
+            topicId,
+            "messages"
+        ),
+
+        orderBy("created")
+
+    );
+
+    onSnapshot(q, snapshot => {
 
         messages.innerHTML = "";
 
-        if (list.length === 0) {
+        if (snapshot.empty) {
 
             messages.innerHTML = `
                 <div class="loading">
@@ -166,7 +183,11 @@ function startChat() {
 
         }
 
-        list.forEach(addMessage);
+        snapshot.forEach(document => {
+
+            addMessage(document.data());
+
+        });
 
         messages.scrollTop = messages.scrollHeight;
 
@@ -185,21 +206,15 @@ function addMessage(message) {
     div.innerHTML = `
 
         <div class="messageUser">
-
             ${escapeHtml(message.user || "Anônimo")}
-
         </div>
 
         <div class="messageDate">
-
             ${formatDate(message.created)}
-
         </div>
 
         <div class="messageText">
-
             ${escapeHtml(message.text)}
-
         </div>
 
     `;
@@ -210,13 +225,13 @@ function addMessage(message) {
 
 // ======================================================
 
-form.addEventListener("submit", async (event) => {
+form.addEventListener("submit", async event => {
 
     event.preventDefault();
 
     const text = messageInput.value.trim();
 
-    if (text === "") return;
+    if (!text) return;
 
     const button = form.querySelector("button");
 
@@ -225,13 +240,9 @@ form.addEventListener("submit", async (event) => {
     try {
 
         await sendMessage(
-
             topicId,
-
             username,
-
             text
-
         );
 
         messageInput.value = "";
@@ -254,11 +265,7 @@ form.addEventListener("submit", async (event) => {
 
 function formatDate(timestamp) {
 
-    if (!timestamp) {
-
-        return "";
-
-    }
+    if (!timestamp) return "";
 
     if (timestamp.seconds) {
 
