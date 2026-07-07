@@ -7,6 +7,8 @@ import {
     addDoc,
     getDoc,
     getDocs,
+    updateDoc,
+    deleteDoc,
     query,
     orderBy,
     serverTimestamp
@@ -42,12 +44,17 @@ export const db = getFirestore(app);
 
 export async function getTopics() {
 
-    const q = query(
-        collection(db, "topics"),
-        orderBy("created", "desc")
-    );
+    const snapshot = await getDocs(
 
-    const snapshot = await getDocs(q);
+        query(
+
+            collection(db, "topics"),
+
+            orderBy("created", "desc")
+
+        )
+
+    );
 
     return snapshot.docs.map(document => ({
 
@@ -64,7 +71,9 @@ export async function getTopics() {
 export async function getTopic(topicId) {
 
     const snapshot = await getDoc(
+
         doc(db, "topics", topicId)
+
     );
 
     if (!snapshot.exists()) {
@@ -99,6 +108,8 @@ export async function createTopic(topic) {
 
             age: Number(topic.age),
 
+            owner: topic.owner,
+
             created: serverTimestamp()
 
         }
@@ -110,25 +121,66 @@ export async function createTopic(topic) {
 }
 
 // ======================================================
+
+export async function updateTopic(
+    topicId,
+    title,
+    description,
+    age
+) {
+
+    await updateDoc(
+
+        doc(db, "topics", topicId),
+
+        {
+
+            title,
+
+            description,
+
+            age: Number(age)
+
+        }
+
+    );
+
+}
+
+// ======================================================
+
+export async function deleteTopic(topicId) {
+
+    await deleteDoc(
+
+        doc(db, "topics", topicId)
+
+    );
+
+}
+
+// ======================================================
 // MENSAGENS
 // ======================================================
 
 export async function getMessages(topicId) {
 
-    const q = query(
+    const snapshot = await getDocs(
 
-        collection(
-            db,
-            "topics",
-            topicId,
-            "messages"
-        ),
+        query(
 
-        orderBy("created")
+            collection(
+                db,
+                "topics",
+                topicId,
+                "messages"
+            ),
+
+            orderBy("created")
+
+        )
 
     );
-
-    const snapshot = await getDocs(q);
 
     return snapshot.docs.map(document => ({
 
@@ -142,7 +194,15 @@ export async function getMessages(topicId) {
 
 // ======================================================
 
-export async function sendMessage(topicId, user, text) {
+export async function sendMessage(
+    topicId,
+    user,
+    text
+) {
+
+    const owner =
+
+        localStorage.getItem("globalchat_userid");
 
     await addDoc(
 
@@ -157,11 +217,66 @@ export async function sendMessage(topicId, user, text) {
 
             user: user || "Anônimo",
 
-            text: text,
+            text,
+
+            owner,
+
+            edited: false,
 
             created: serverTimestamp()
 
         }
+
+    );
+
+}
+
+// ======================================================
+
+export async function editMessage(
+    topicId,
+    messageId,
+    text
+) {
+
+    await updateDoc(
+
+        doc(
+            db,
+            "topics",
+            topicId,
+            "messages",
+            messageId
+        ),
+
+        {
+
+            text,
+
+            edited: true
+
+        }
+
+    );
+
+}
+
+// ======================================================
+
+export async function deleteMessage(
+    topicId,
+    messageId
+) {
+
+    await deleteDoc(
+
+        doc(
+            db,
+            "topics",
+            topicId,
+            "messages",
+            messageId
+        )
 
     );
 
