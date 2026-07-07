@@ -16,6 +16,8 @@
         href="css/style.css"
     >
 
+    <link rel="icon" type="image/png" href="Retropixel_logo.png">
+
 </head>
 <body>
 
@@ -51,6 +53,26 @@
                 id="topicAge"
                 class="age"
             ></span>
+
+            <div class="topicButtons">
+
+                <button
+                    id="editTopicButton"
+                    class="button"
+                    style="display:none;"
+                >
+                    Editar tópico
+                </button>
+
+                <button
+                    id="deleteTopicButton"
+                    class="button secondary"
+                    style="display:none;"
+                >
+                    Apagar tópico
+                </button>
+
+            </div>
 
         </section>
 
@@ -101,7 +123,9 @@
 
     </main>
 
+    <!-- ========================================== -->
     <!-- Aviso de idade -->
+    <!-- ========================================== -->
 
     <div
         id="ageWarning"
@@ -111,12 +135,15 @@
         <div class="modalBox">
 
             <h2>
+
                 ⚠ Conteúdo Restrito
+
             </h2>
 
             <p>
 
-                Este tópico é recomendado para maiores de
+                Este tópico é recomendado
+                para maiores de
 
                 <strong id="warningAge"></strong>.
 
@@ -124,8 +151,9 @@
 
             <p>
 
-                Ele pode conter assuntos destinados
-                a um público mais velho.
+                Ele pode conter assuntos
+                destinados a um público
+                mais velho.
 
             </p>
 
@@ -151,7 +179,9 @@
 
     </div>
 
+    <!-- ========================================== -->
     <!-- Nome de usuário -->
+    <!-- ========================================== -->
 
     <div
         id="usernameModal"
@@ -161,7 +191,9 @@
         <div class="modalBox">
 
             <h2>
+
                 Entrar no tópico
+
             </h2>
 
             <p>
@@ -170,7 +202,8 @@
 
                 <br><br>
 
-                Deixe em branco para entrar como
+                Se deixar vazio,
+                você entrará como
                 <strong>Anônimo</strong>.
 
             </p>
@@ -189,6 +222,235 @@
                     class="button"
                 >
                     Entrar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+        <!-- ========================================== -->
+    <!-- Editar tópico -->
+    <!-- ========================================== -->
+
+    <div
+        id="editTopicModal"
+        class="modal hidden"
+    >
+
+        <div class="modalBox">
+
+            <h2>
+
+                Editar tópico
+
+            </h2>
+
+            <label for="editTopicTitle">
+
+                Título
+
+            </label>
+
+            <input
+                type="text"
+                id="editTopicTitle"
+                maxlength="50"
+            >
+
+            <label for="editTopicDescription">
+
+                Descrição
+
+            </label>
+
+            <textarea
+                id="editTopicDescription"
+                rows="4"
+                maxlength="300"
+            ></textarea>
+
+            <label for="editTopicAge">
+
+                Idade mínima
+
+            </label>
+
+            <select id="editTopicAge">
+
+                <option value="0">Livre</option>
+                <option value="10">10+</option>
+                <option value="12">12+</option>
+                <option value="14">14+</option>
+                <option value="16">16+</option>
+                <option value="18">18+</option>
+
+            </select>
+
+            <div class="buttons">
+
+                <button
+                    id="saveTopicButton"
+                    class="button"
+                >
+                    Salvar
+                </button>
+
+                <button
+                    id="cancelEditTopicButton"
+                    class="button secondary"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- Apagar tópico -->
+    <!-- ========================================== -->
+
+    <div
+        id="deleteTopicModal"
+        class="modal hidden"
+    >
+
+        <div class="modalBox">
+
+            <h2>
+
+                Apagar tópico
+
+            </h2>
+
+            <p>
+
+                Tem certeza de que deseja apagar
+                este tópico?
+
+            </p>
+
+            <p>
+
+                Esta ação não poderá ser desfeita.
+
+            </p>
+
+            <div class="buttons">
+
+                <button
+                    id="confirmDeleteTopicButton"
+                    class="button secondary"
+                >
+                    Apagar
+                </button>
+
+                <button
+                    id="cancelDeleteTopicButton"
+                    class="button"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- Editar mensagem -->
+    <!-- ========================================== -->
+
+    <div
+        id="editMessageModal"
+        class="modal hidden"
+    >
+
+        <div class="modalBox">
+
+            <h2>
+
+                Editar mensagem
+
+            </h2>
+
+            <textarea
+                id="editMessageInput"
+                rows="5"
+                maxlength="500"
+            ></textarea>
+
+            <div class="buttons">
+
+                <button
+                    id="saveMessageButton"
+                    class="button"
+                >
+                    Salvar
+                </button>
+
+                <button
+                    id="cancelEditMessageButton"
+                    class="button secondary"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- Apagar mensagem -->
+    <!-- ========================================== -->
+
+    <div
+        id="deleteMessageModal"
+        class="modal hidden"
+    >
+
+        <div class="modalBox">
+
+            <h2>
+
+                Apagar mensagem
+
+            </h2>
+
+            <p>
+
+                Tem certeza de que deseja apagar
+                esta mensagem?
+
+            </p>
+
+            <p>
+
+                Esta ação não poderá ser desfeita.
+
+            </p>
+
+            <div class="buttons">
+
+                <button
+                    id="confirmDeleteMessageButton"
+                    class="button secondary"
+                >
+                    Apagar
+                </button>
+
+                <button
+                    id="cancelDeleteMessageButton"
+                    class="button"
+                >
+                    Cancelar
                 </button>
 
             </div>
