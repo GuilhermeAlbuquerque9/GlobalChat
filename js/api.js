@@ -2,7 +2,7 @@
 // GlobalChat API
 // =====================================================
 
-// Cole aqui a URL do seu Aplicativo da Web.
+// URL do Aplicativo da Web do Google Apps Script.
 const API_URL = "https://script.google.com/macros/s/AKfycbzafZY9FvQLbP3-CXZ8jPqxzgEZMQHEe3KT9NWXcpglv9y8AJ5fSQMbYCFW01h7k8AHKQ/exec";
 
 // =====================================================
@@ -57,26 +57,16 @@ async function getMessages(topicId) {
 
 async function createTopicAPI(topic) {
 
+    const body = new URLSearchParams();
+
+    body.append("action", "createTopic");
+    body.append("title", topic.title);
+    body.append("description", topic.description);
+    body.append("age", topic.age);
+
     const response = await fetch(API_URL, {
-
         method: "POST",
-
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-            action: "createTopic",
-
-            title: topic.title,
-
-            description: topic.description,
-
-            age: topic.age
-
-        })
-
+        body: body
     });
 
     if (!response.ok) {
@@ -91,26 +81,16 @@ async function createTopicAPI(topic) {
 
 async function sendMessageAPI(message) {
 
+    const body = new URLSearchParams();
+
+    body.append("action", "sendMessage");
+    body.append("topic", message.topic);
+    body.append("user", message.user || "Anônimo");
+    body.append("text", message.text);
+
     const response = await fetch(API_URL, {
-
         method: "POST",
-
-        headers: {
-            "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-
-            action: "sendMessage",
-
-            topic: message.topic,
-
-            user: message.user,
-
-            text: message.text
-
-        })
-
+        body: body
     });
 
     if (!response.ok) {
