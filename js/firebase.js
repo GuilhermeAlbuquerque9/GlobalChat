@@ -12,9 +12,9 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// =====================================================
+// ======================================================
 // Firebase
-// =====================================================
+// ======================================================
 
 const firebaseConfig = {
 
@@ -36,33 +36,35 @@ const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 
-// =====================================================
+// ======================================================
+// TÓPICOS
+// ======================================================
 
 export async function getTopics() {
 
-    const snapshot = await getDocs(
-        query(
-            collection(db, "topics"),
-            orderBy("created", "desc")
-        )
+    const q = query(
+        collection(db, "topics"),
+        orderBy("created", "desc")
     );
 
-    return snapshot.docs.map(doc => ({
+    const snapshot = await getDocs(q);
 
-        id: doc.id,
+    return snapshot.docs.map(document => ({
 
-        ...doc.data()
+        id: document.id,
+
+        ...document.data()
 
     }));
 
 }
 
-// =====================================================
+// ======================================================
 
-export async function getTopic(id) {
+export async function getTopic(topicId) {
 
     const snapshot = await getDoc(
-        doc(db, "topics", id)
+        doc(db, "topics", topicId)
     );
 
     if (!snapshot.exists()) {
@@ -81,12 +83,14 @@ export async function getTopic(id) {
 
 }
 
-// =====================================================
+// ======================================================
 
 export async function createTopic(topic) {
 
     const ref = await addDoc(
+
         collection(db, "topics"),
+
         {
 
             title: topic.title,
@@ -98,44 +102,45 @@ export async function createTopic(topic) {
             created: serverTimestamp()
 
         }
+
     );
 
     return ref.id;
 
 }
 
-// =====================================================
+// ======================================================
+// MENSAGENS
+// ======================================================
 
 export async function getMessages(topicId) {
 
-    const snapshot = await getDocs(
+    const q = query(
 
-        query(
+        collection(
+            db,
+            "topics",
+            topicId,
+            "messages"
+        ),
 
-            collection(
-                db,
-                "topics",
-                topicId,
-                "messages"
-            ),
-
-            orderBy("created")
-
-        )
+        orderBy("created")
 
     );
 
-    return snapshot.docs.map(doc => ({
+    const snapshot = await getDocs(q);
 
-        id: doc.id,
+    return snapshot.docs.map(document => ({
 
-        ...doc.data()
+        id: document.id,
+
+        ...document.data()
 
     }));
 
 }
 
-// =====================================================
+// ======================================================
 
 export async function sendMessage(topicId, user, text) {
 
@@ -150,9 +155,9 @@ export async function sendMessage(topicId, user, text) {
 
         {
 
-            user,
+            user: user || "Anônimo",
 
-            text,
+            text: text,
 
             created: serverTimestamp()
 
